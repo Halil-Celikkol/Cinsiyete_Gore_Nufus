@@ -166,13 +166,14 @@
 
         <div class="grid">
             <!-- Grafik 1 -->
-            <div class="card" onclick="openModal('Grafik1.jpeg', 'Nüfus Artış Trendi (1965-2023)', 'Türkiye\'nin son 60 yıldaki demografik büyümesini analiz eder. 1980 sonrası sanayileşme ve 2000 sonrası kentleşme etkileri grafik üzerindeki ivme değişikliklerinde net olarak gözlemlenebilir.', 'plt.plot(yillar, nufus, marker=\'o\', color=\'#38bdf8\')\nplt.fill_between(yillar, nufus, alpha=0.2)\nplt.title(\'Yıllara Göre Toplam Nüfus\')')">
-                <img src="Grafik1.jpeg" alt="Nüfus Artış Trendi">
-                <div class="card-body">
-                    <span class="tag">Zaman Serisi Analizi</span>
-                    <h3>Genel Nüfus Projeksiyonu</h3>
-                </div>
-            </div>
+            <!-- Grafik 1 - GÜNCELLENDİ (1935-2025) -->
+<div class="card" onclick="openModal('Grafik1.jpeg', 'Nüfusun Cinsiyete Göre Değişimi (1935-2025)', 'Türkiye\'nin 1935 yılından 2025 projeksiyonuna kadar uzanan 90 yıllık demografik serüveni. Grafikte toplam nüfusun yanı sıra kadın ve erkek nüfusunun birbirine paralel seyri ve Cumhuriyet tarihindeki büyüme ivmesi net bir şekilde analiz edilmektedir.', 'plt.figure(figsize=(12,6))\nplt.plot(df[\'Yil\'], df[\'Erkek\'], label=\'Erkek\', marker=\'o\')\nplt.plot(df[\'Yil\'], df[\'Kadin\'], label=\'Kadin\', marker=\'o\')\nplt.plot(df[\'Yil\'], df[\'Toplam\'], linestyle=\'--\', alpha=0.5)\nplt.title(\'Türkiye Nüfus Değişimi (1935-2025)\')\nplt.legend()')">
+    <img src="Grafik1.jpeg" alt="Nüfus Artış Trendi">
+    <div class="card-body">
+        <span class="tag">90 Yıllık Trend Analizi</span>
+        <h3>Genel Nüfus Projeksiyonu (1935-2025)</h3>
+    </div>
+</div>
 
             <!-- Grafik 2 -->
             <div class="card" onclick="openModal('Grafik2.png', 'Cinsiyet Dağılım Analizi', 'Kadın ve erkek nüfusunun toplam içindeki payını gösterir. Özellikle çalışma çağındaki nüfusta cinsiyet dengesinin ekonomik işgücüne katılım oranları ile korelasyonu incelenmiştir.', 'sns.barplot(x=\'Cinsiyet\', y=\'Sayi\', data=df, palette=[\'#38bdf8\', \'#818cf8\'])\nplt.title(\'Cinsiyet Dağılım Dengesi\')')">
