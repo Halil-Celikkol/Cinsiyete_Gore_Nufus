@@ -137,6 +137,35 @@
             main { margin-left: 0; padding: 80px 20px 20px 20px; }
             nav { width: 100%; height: 60px; flex-direction: row; justify-content: center; bottom: auto; padding: 0; gap: 30px; }
             .nav-icon { margin-bottom: 0; }
+            /* Mevcut kodlarının sonuna ekle */
+.qr-container { position: relative; }
+.qr-tooltip {
+    position: absolute;
+    left: 80px;
+    bottom: 0;
+    background: var(--card-bg);
+    padding: 15px;
+    border-radius: 15px;
+    border: 1px solid var(--primary);
+    visibility: hidden;
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: 0.4s;
+    backdrop-filter: blur(15px);
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    z-index: 1000;
+}
+.qr-container:hover .qr-tooltip {
+    visibility: visible;
+    opacity: 1;
+    transform: translateX(0);
+}
+
+@media (max-width: 968px) {
+    .qr-tooltip { left: 50%; transform: translateX(-50%) translateY(-130px); bottom: 100%; }
+    .qr-container:hover .qr-tooltip { transform: translateX(-50%) translateY(-140px); }
+}
         }
     </style>
 </head>
