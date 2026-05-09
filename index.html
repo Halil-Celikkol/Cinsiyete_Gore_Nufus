@@ -3,373 +3,262 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nüfus Analiz Sistemi | Veri Portalı</title>
-    <!-- Modern Yazı Tipleri -->
+    <title>Nüfus Veri Analizi | Halil Çelikkol</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono&display=swap" rel="stylesheet">
-    <!-- İkon Seti -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         :root {
-            --bg-deep: #020617;
-            --bg-card: rgba(15, 23, 42, 0.8);
+            --bg: #020617;
+            --card-bg: rgba(15, 23, 42, 0.7);
             --primary: #38bdf8;
             --secondary: #818cf8;
-            --accent: #f472b6;
             --text: #f8fafc;
-            --text-muted: #94a3b8;
-            --glass: rgba(255, 255, 255, 0.03);
+            --text-dim: #94a3b8;
             --border: rgba(255, 255, 255, 0.1);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; scroll-behavior: smooth; }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            background: var(--bg-deep);
+            background: var(--bg);
             color: var(--text);
             font-family: 'Outfit', sans-serif;
+            line-height: 1.6;
             overflow-x: hidden;
-            background-image: 
-                radial-gradient(circle at 10% 20%, rgba(56, 189, 248, 0.05) 0%, transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(129, 140, 248, 0.05) 0%, transparent 40%);
         }
 
-        /* --- Yan Menü (Sidebar) --- */
+        /* Arka Plan Efekti */
+        .bg-glow {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% -20%, #1e293b, transparent);
+            z-index: -1;
+        }
+
+        /* Sidebar */
         nav {
-            position: fixed;
-            left: 0; top: 0; bottom: 0; width: 80px;
-            background: rgba(2, 6, 23, 0.8);
-            backdrop-filter: blur(20px);
+            position: fixed; left: 0; top: 0; bottom: 0; width: 70px;
+            background: rgba(2, 6, 23, 0.9);
             border-right: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 30px 0;
-            z-index: 100;
+            display: flex; flex-direction: column; align-items: center; padding: 25px 0;
+            z-index: 100; backdrop-filter: blur(10px);
         }
 
-        .nav-icon {
-            color: var(--text-muted);
-            font-size: 1.5rem;
-            margin-bottom: 35px;
-            cursor: pointer;
-            transition: 0.3s;
+        .nav-icon { color: var(--text-dim); font-size: 1.4rem; margin-bottom: 30px; cursor: pointer; transition: 0.3s; }
+        .nav-icon:hover { color: var(--primary); transform: translateY(-3px); }
+
+        /* Main Content */
+        main { margin-left: 70px; padding: 50px; max-width: 1500px; }
+
+        .header-area { margin-bottom: 50px; }
+        .header-area h1 { font-size: 3rem; font-weight: 800; letter-spacing: -1px; }
+        .header-area span { color: var(--primary); }
+
+        /* Stats Bar */
+        .stats-bar {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px; margin-bottom: 40px;
         }
-
-        .nav-icon:hover, .nav-icon.active { color: var(--primary); transform: scale(1.1); }
-
-        /* --- Ana İçerik --- */
-        main { margin-left: 80px; padding: 40px; }
-
-        /* --- Kahraman Bölümü (Hero) --- */
-        .hero {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 60px;
-            padding: 40px;
-            background: var(--glass);
-            border-radius: 30px;
-            border: 1px solid var(--border);
-        }
-
-        .hero-text h1 { font-size: 3.5rem; font-weight: 800; line-height: 1.1; margin-bottom: 15px; }
-        .hero-text span { color: var(--primary); }
-        .hero-text p { color: var(--text-muted); font-size: 1.2rem; max-width: 600px; }
-
-        /* --- İstatistik Sayaçları --- */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
-            margin-bottom: 50px;
-        }
-
-        .stat-card {
-            background: var(--glass);
-            border: 1px solid var(--border);
-            padding: 25px;
-            border-radius: 20px;
+        .stat-item {
+            background: var(--card-bg);
+            padding: 20px; border-radius: 15px; border: 1px solid var(--border);
             text-align: center;
         }
+        .stat-item span { display: block; color: var(--text-dim); font-size: 0.8rem; text-transform: uppercase; }
+        .stat-item strong { font-size: 1.5rem; color: var(--primary); }
 
-        .stat-card h4 { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 10px; text-transform: uppercase; }
-        .stat-card div { font-size: 2rem; font-weight: 800; color: var(--text); }
-
-        /* --- Grafik Kartları --- */
-        .section-header { margin-bottom: 30px; display: flex; align-items: center; gap: 15px; }
-        .section-header h2 { font-size: 2rem; }
-        .line { flex-grow: 1; height: 1px; background: var(--border); }
-
-        .charts-container {
+        /* Grid */
+        .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
             gap: 30px;
         }
 
-        .chart-box {
-            background: var(--bg-card);
-            border-radius: 24px;
-            padding: 10px;
-            border: 1px solid var(--border);
-            transition: 0.4s;
-            position: relative;
-            overflow: hidden;
+        /* Kart Tasarımı */
+        .card {
+            background: var(--card-bg);
+            border-radius: 24px; border: 1px solid var(--border);
+            overflow: hidden; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer; position: relative;
         }
 
-        .chart-box:hover {
+        .card:hover {
+            transform: translateY(-10px);
             border-color: var(--primary);
-            box-shadow: 0 0 30px rgba(56, 189, 248, 0.1);
-            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
         }
 
-        .chart-img-wrapper {
-            position: relative;
-            width: 100%;
-            height: 300px;
-            border-radius: 20px;
-            overflow: hidden;
-        }
+        .card img { width: 100%; height: 260px; object-fit: cover; border-bottom: 1px solid var(--border); }
 
-        .chart-img-wrapper img {
-            width: 100%; height: 100%; object-fit: cover; transition: 0.5s;
-        }
+        .card-body { padding: 25px; }
+        .tag { background: rgba(56, 189, 248, 0.1); color: var(--primary); padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; }
+        .card h3 { margin-top: 15px; font-size: 1.4rem; }
 
-        .chart-box:hover img { transform: scale(1.05); filter: brightness(0.7); }
-
-        .overlay-btn {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            background: var(--primary);
-            color: var(--bg-deep);
-            padding: 12px 25px;
-            border-radius: 30px;
-            font-weight: 700;
-            opacity: 0;
-            transition: 0.3s;
-            cursor: pointer;
-        }
-
-        .chart-box:hover .overlay-btn { opacity: 1; }
-
-        .chart-details { padding: 20px; }
-        .chart-details h3 { margin-bottom: 10px; font-size: 1.4rem; }
-
-        /* --- Fullscreen Analiz Modalı --- */
+        /* Modal (Fullscreen Analiz) */
         .modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg-deep);
-            z-index: 1000;
-            padding: 40px;
-            overflow-y: auto;
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(2, 6, 23, 0.98); z-index: 2000; overflow-y: auto;
+            backdrop-filter: blur(15px); padding: 40px;
         }
 
         .modal-content {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: 1.5fr 1fr;
-            gap: 50px;
+            max-width: 1300px; margin: 0 auto; display: grid; grid-template-columns: 1.4fr 1fr; gap: 40px;
+            animation: fadeIn 0.4s ease;
         }
 
-        .modal-view img {
-            width: 100%;
-            border-radius: 25px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            border: 1px solid var(--border);
+        .modal-view img { width: 100%; border-radius: 20px; border: 1px solid var(--border); box-shadow: 0 0 50px rgba(0,0,0,0.5); }
+
+        .modal-info { background: rgba(255,255,255,0.03); padding: 40px; border-radius: 30px; border: 1px solid var(--border); }
+
+        .code-box {
+            background: #000; padding: 20px; border-radius: 15px; font-family: 'JetBrains Mono';
+            font-size: 0.85rem; color: #10b981; margin: 20px 0; border: 1px solid #064e3b;
         }
 
-        .analysis-panel {
-            background: var(--glass);
-            padding: 40px;
-            border-radius: 30px;
-            border: 1px solid var(--border);
+        .btn-close { position: fixed; top: 30px; right: 40px; font-size: 2.5rem; color: white; cursor: pointer; z-index: 2001; }
+
+        .download-btn {
+            display: block; width: 100%; padding: 15px; background: var(--primary); color: #020617;
+            text-align: center; border-radius: 12px; font-weight: 800; text-decoration: none; margin-top: 20px;
         }
 
-        .code-snippet {
-            background: #000;
-            padding: 20px;
-            border-radius: 15px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.85rem;
-            margin-top: 20px;
-            color: #10b981;
-            border: 1px solid #064e3b;
-        }
-
-        .close-modal {
-            position: fixed;
-            top: 30px; right: 40px;
-            font-size: 2rem;
-            cursor: pointer;
-            color: var(--text-muted);
-            z-index: 1001;
-        }
-
-        /* --- Footer --- */
-        footer {
-            margin-top: 100px;
-            padding: 60px;
-            text-align: center;
-            border-top: 1px solid var(--border);
-            color: var(--text-muted);
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
         @media (max-width: 1000px) {
             .modal-content { grid-template-columns: 1fr; }
-            .stats-grid { grid-template-columns: 1fr 1fr; }
-            .hero { flex-direction: column; text-align: center; }
+            main { padding: 20px; }
         }
     </style>
 </head>
 <body>
 
+    <div class="bg-glow"></div>
+
     <nav>
-        <div class="nav-icon active"><i class="fas fa-chart-line"></i></div>
-        <div class="nav-icon"><i class="fas fa-database"></i></div>
-        <div class="nav-icon"><i class="fas fa-microchip"></i></div>
-        <div class="nav-icon" style="margin-top: auto;"><i class="fab fa-github"></i></div>
+        <div class="nav-icon"><i class="fas fa-home"></i></div>
+        <div class="nav-icon"><i class="fas fa-chart-pie"></i></div>
+        <div class="nav-icon"><i class="fas fa-code"></i></div>
+        <div class="nav-icon" style="margin-top: auto;"><a href="https://github.com/Halil-Celikkol" target="_blank" style="color:inherit;"><i class="fab fa-github"></i></a></div>
     </nav>
 
     <main>
-        <!-- Kahraman Bölümü -->
-        <section class="hero">
-            <div class="hero-text">
-                <h1>Türkiye <span>Demografik</span><br>Veri Laboratuvarı</h1>
-                <p>1965'ten günümüze Türkiye'nin nüfus yolculuğunu, cinsiyet dağılımını ve gelecek projeksiyonlarını gelişmiş algoritmalarla analiz edin.</p>
-            </div>
-            <div class="hero-stats">
-                <!-- Buraya mini bir animasyon veya görsel gelebilir -->
-            </div>
-        </section>
-
-        <!-- Hızlı İstatistikler -->
-        <section class="stats-grid">
-            <div class="stat-card">
-                <h4>Toplam Kayıt</h4>
-                <div>58 Yıl</div>
-            </div>
-            <div class="stat-card">
-                <h4>Veri Noktası</h4>
-                <div>+12,400</div>
-            </div>
-            <div class="stat-card">
-                <h4>Analiz Modeli</h4>
-                <div>Regression V3</div>
-            </div>
-            <div class="stat-card">
-                <h4>Son Güncelleme</h4>
-                <div>2026.05</div>
-            </div>
-        </section>
-
-        <!-- Grafik Bölümü -->
-        <div class="section-header">
-            <h2>Analiz Grafikleri</h2>
-            <div class="line"></div>
+        <div class="header-area">
+            <h1>Türkiye <span>Demografik</span> Analiz</h1>
+            <p style="color: var(--text-dim)">TÜİK verileri kullanılarak hazırlanan görselleştirme kütüphanesi</p>
         </div>
 
-        <div class="charts-container">
+        <div class="stats-bar">
+            <div class="stat-item"><span>Veri Seti</span><strong>CSV / Excel</strong></div>
+            <div class="stat-item"><span>Grafik Sayısı</span><strong>5 Adet</strong></div>
+            <div class="stat-item"><span>Kütüphane</span><strong>Matplotlib</strong></div>
+            <div class="stat-item"><span>Güncelleme</span><strong>Mayıs 2026</strong></div>
+        </div>
+
+        <div class="grid">
             <!-- Grafik 1 -->
-            <div class="chart-box" onclick="openAnalysis('Grafik1.jpeg', 'Zaman Serisi Analizi', 'Bu grafik, Türkiye\'nin toplam nüfus artış hızını lineer ve logaritmik ölçekte karşılaştırır. 1980 sonrasındaki ivmelenme net şekilde gözlemlenebilir.')">
-                <div class="chart-img-wrapper">
-                    <img src="Grafik1.jpeg" alt="Nüfus Trendi">
-                    <div class="overlay-btn">Analizi Aç</div>
-                </div>
-                <div class="chart-details">
-                    <span style="color:var(--primary); font-size: 0.8rem; font-weight: 700;">PYTHON MATPLOTLIB</span>
-                    <h3>Nüfus Değişim Trendi</h3>
-                    <p style="color: var(--text-muted);">Yıllık bazda toplam nüfus dalgalanmaları.</p>
+            <div class="card" onclick="openModal('Grafik1.jpeg', 'Nüfus Artış Trendi', 'Türkiye\'nin 1965\'ten günümüze toplam nüfus değişimini gösteren ana grafik. Artış hızının dönemsel kırılımları net bir şekilde izlenebilir.')">
+                <img src="Grafik1.jpeg" alt="Grafik 1">
+                <div class="card-body">
+                    <span class="tag">LINE CHART</span>
+                    <h3>Genel Nüfus Trendi</h3>
                 </div>
             </div>
 
             <!-- Grafik 2 -->
-            <div class="chart-box" onclick="openAnalysis('Grafik2.png', 'Cinsiyet Dengesi Raporu', 'Kırsaldan kente göç ve sanayileşme süreçlerinin kadın-erkek nüfus oranı üzerindeki etkileri veri setimizde %98 doğrulukla işlenmiştir.')">
-                <div class="chart-img-wrapper">
-                    <img src="Grafik2.png" alt="Cinsiyet">
-                    <div class="overlay-btn">Analizi Aç</div>
-                </div>
-                <div class="chart-details">
-                    <span style="color:var(--accent); font-size: 0.8rem; font-weight: 700;">SEABORN HEATMAP</span>
-                    <h3>Cinsiyet Dağılım Analizi</h3>
-                    <p style="color: var(--text-muted);">Demografik yapının cinsiyet bazlı kırılımı.</p>
+            <div class="card" onclick="openModal('Grafik2.png', 'Cinsiyet Dağılımı', 'Kadın ve erkek nüfusu arasındaki dengenin yıllara göre gelişimi. Kentsel ve kırsal dağılımın cinsiyet üzerindeki etkilerini analiz eder.')">
+                <img src="Grafik2.png" alt="Grafik 2">
+                <div class="card-body">
+                    <span class="tag">BAR CHART</span>
+                    <h3>Cinsiyet Dengesi</h3>
                 </div>
             </div>
 
             <!-- Grafik 3 -->
-            <div class="chart-box" onclick="openAnalysis('Grafik3.png', 'Projeksiyonel Tahminleme', 'Arima ve SARIMA modelleri kullanılarak elde edilen bu veriler, önümüzdeki 10 yılın nüfus yaşlanma indeksini ortaya koyar.')">
-                <div class="chart-img-wrapper">
-                    <img src="Grafik3.png" alt="Tahmin">
-                    <div class="overlay-btn">Analizi Aç</div>
+            <div class="card" onclick="openModal('Grafik3.png', 'Yıllık Artış Oranı', 'Nüfusun sadece miktar olarak değil, artış hızı (yüzde) bazında nasıl yavaşladığını gösteren kritik bir analiz.')">
+                <img src="Grafik3.png" alt="Grafik 3">
+                <div class="card-body">
+                    <span class="tag">PERCENTAGE</span>
+                    <h3>Artış Hızı Analizi</h3>
                 </div>
-                <div class="chart-details">
-                    <span style="color:var(--secondary); font-size: 0.8rem; font-weight: 700;">PREDICTIVE AI</span>
-                    <h3>Gelecek Projeksiyonu</h3>
-                    <p style="color: var(--text-muted);">2035 yılına kadar beklenen değişim oranları.</p>
+            </div>
+
+            <!-- Grafik 4 -->
+            <div class="card" onclick="openModal('Grafik4.png', 'Bölgesel Dağılım', 'Türkiye\'nin farklı bölgelerindeki nüfus yoğunluğu ve cinsiyet oranlarının karşılaştırmalı görselleştirmesi.')">
+                <img src="Grafik4.png" alt="Grafik 4">
+                <div class="card-body">
+                    <span class="tag">COMPARATIVE</span>
+                    <h3>Bölgesel Kırılım</h3>
+                </div>
+            </div>
+
+            <!-- Grafik 5 -->
+            <div class="card" onclick="openModal('Grafik5.png', 'Gelecek Projeksiyonu', 'Mevcut veriler ışığında yapılan regresyon analizi ile 2030 yılına dair nüfus tahminleme modellemesi.')">
+                <img src="Grafik5.png" alt="Grafik 5">
+                <div class="card-body">
+                    <span class="tag">PREDICTION</span>
+                    <h3>2030 Projeksiyonu</h3>
                 </div>
             </div>
         </div>
     </main>
 
     <!-- Analiz Modalı -->
-    <div id="analysisModal" class="modal">
-        <span class="close-modal" onclick="closeAnalysis()">&times;</span>
+    <div id="analizModali" class="modal">
+        <span class="btn-close" onclick="closeModal()">&times;</span>
         <div class="modal-content">
             <div class="modal-view">
-                <img id="mImg" src="" alt="Büyük Görsel">
-                <div class="code-snippet">
-                    // Veri İşleme Algoritması<br>
-                    df['growth_rate'] = df['total'].pct_change() * 100<br>
-                    model.fit(X_train, y_train)<br>
-                    print("Model Accuracy: 0.982")
+                <img id="modalImg" src="" alt="">
+                <div class="code-box">
+                    # Veri İşleme Kodu<br>
+                    plt.figure(figsize=(10,6))<br>
+                    plt.plot(df['Yıl'], df['Toplam'], color='#38bdf8')<br>
+                    plt.title('Nüfus Analizi V1.2')<br>
+                    plt.show()
                 </div>
             </div>
-            <div class="analysis-panel">
-                <h2 id="mTitle" style="font-size: 2.5rem; margin-bottom: 20px;">Başlık</h2>
-                <hr style="border: 0; border-top: 1px solid var(--border); margin-bottom: 20px;">
-                <p id="mDesc" style="font-size: 1.2rem; line-height: 1.8; color: var(--text-muted); margin-bottom: 30px;">
-                    Açıklama...
-                </p>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                    <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px;">
-                        <small style="color: var(--primary);">Kaynak</small><br><strong>TÜİK / Veri Seti</strong>
-                    </div>
-                    <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px;">
-                        <small style="color: var(--primary);">Güven Aralığı</small><br><strong>%95</strong>
-                    </div>
+            <div class="modal-info">
+                <h2 id="modalTitle" style="font-size: 2.2rem; margin-bottom: 20px;"></h2>
+                <p id="modalDesc" style="color: var(--text-dim); font-size: 1.1rem; margin-bottom: 30px;"></p>
+                
+                <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 15px;">
+                    <h4 style="color: var(--primary); margin-bottom: 10px;"><i class="fas fa-info-circle"></i> Analist Notu</h4>
+                    <p style="font-size: 0.9rem;">Bu grafik, TÜİK'in halka açık veri setleri kullanılarak Python Pandas ve Matplotlib kütüphaneleri ile oluşturulmuştur. Veriler her yıl güncellenmektedir.</p>
                 </div>
-                <button class="overlay-btn" style="position: relative; opacity: 1; transform: none; width: 100%; margin-top: 30px; left:0; top:0;">Raporu İndir (.PDF)</button>
+
+                <a href="" id="downloadBtn" download class="download-btn">GRAFİĞİ İNDİR (HD)</a>
             </div>
         </div>
     </div>
 
-    <footer>
-        <p>Halil Çelikkol tarafından Veri Bilimi çalışmaları kapsamında tasarlanmıştır.</p>
-        <p style="margin-top: 10px; font-size: 0.8rem;">© 2026 • Tüm Hakları Saklıdır.</p>
-    </footer>
-
     <script>
-        function openAnalysis(img, title, desc) {
-            document.getElementById('mImg').src = img;
-            document.getElementById('mTitle').innerText = title;
-            document.getElementById('mDesc').innerText = desc;
-            document.getElementById('analysisModal').style.display = 'block';
+        const modal = document.getElementById('analizModali');
+        const mImg = document.getElementById('modalImg');
+        const mTitle = document.getElementById('modalTitle');
+        const mDesc = document.getElementById('modalDesc');
+        const dBtn = document.getElementById('downloadBtn');
+
+        function openModal(img, title, desc) {
+            mImg.src = img;
+            mTitle.innerText = title;
+            mDesc.innerText = desc;
+            dBtn.href = img;
+            modal.style.display = 'block';
             document.body.style.overflow = 'hidden';
         }
 
-        function closeAnalysis() {
-            document.getElementById('analysisModal').style.display = 'none';
+        function closeModal() {
+            modal.style.display = 'none';
             document.body.style.overflow = 'auto';
         }
 
-        window.onclick = function(event) {
-            if (event.target == document.getElementById('analysisModal')) {
-                closeAnalysis();
-            }
+        // Dışarı tıklandığında kapat
+        window.onclick = function(e) {
+            if (e.target == modal) closeModal();
         }
+
+        // ESC tuşu ile kapat
+        document.addEventListener('keydown', (e) => {
+            if (e.key === "Escape") closeModal();
+        });
     </script>
 </body>
 </html>
