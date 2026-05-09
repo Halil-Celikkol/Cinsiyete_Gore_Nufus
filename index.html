@@ -3,235 +3,231 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Türkiye Nüfus Analizi | Cinsiyet Dağılımı</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>Demografik Veri Paneli | Halil Çelikkol</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #2563eb;
-            --secondary: #64748b;
-            --dark: #0f172a;
-            --light: #f8fafc;
-            --card-bg: #ffffff;
+            --bg: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --accent: #38bdf8;
+            --text-main: #f1f5f9;
+            --text-dim: #94a3b8;
+            --glass-border: rgba(255, 255, 255, 0.1);
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--light);
-            color: var(--dark);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg);
+            background-image: radial-gradient(circle at top right, #1e293b, #0f172a);
+            color: var(--text-main);
             margin: 0;
-            line-height: 1.6;
+            padding: 0;
+            overflow-x: hidden;
         }
 
+        /* Cam Efekti Header */
         header {
-            background: linear-gradient(135deg, #1e40af, #2563eb);
-            color: white;
-            padding: 4rem 1rem;
+            padding: 60px 20px;
             text-align: center;
-            clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
+            background: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--glass-border);
+            margin-bottom: 40px;
         }
 
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 2rem;
+        header h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(to right, #fff, #38bdf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0;
         }
 
-        h2.section-title {
-            text-align: center;
-            font-size: 2rem;
-            margin-bottom: 3rem;
-            position: relative;
-        }
-
-        h2.section-title::after {
-            content: '';
-            width: 60px;
-            height: 4px;
-            background: var(--primary);
-            position: absolute;
-            bottom: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-
-        /* Grafik Kartları */
-        .grid {
+        /* Dashboard Izgarası */
+        .dashboard {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-        }
-
-        .card {
-            background: var(--card-bg);
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            cursor: pointer;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-        }
-
-        .card img {
-            width: 100%;
-            height: 250px;
-            object-fit: cover;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .card-content {
-            padding: 1.5rem;
-        }
-
-        .card-content h3 {
-            margin-top: 0;
-            font-size: 1.25rem;
-            color: var(--primary);
-        }
-
-        /* Lightbox (Büyütme Modalı) */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.9);
-            justify-content: center;
-            align-items: center;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            max-width: 1400px;
+            margin: 0 auto;
             padding: 20px;
         }
 
-        .modal-content {
-            max-width: 90%;
-            max-height: 90%;
-            border-radius: 8px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
-            animation: zoom 0.3s ease-out;
-        }
-
-        @keyframes zoom {
-            from {transform: scale(0.7); opacity: 0;}
-            to {transform: scale(1); opacity: 1;}
-        }
-
-        .close {
-            position: absolute;
-            top: 20px;
-            right: 30px;
-            color: white;
-            font-size: 40px;
-            font-weight: bold;
+        .chart-card {
+            background: var(--card-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 20px;
+            backdrop-filter: blur(12px);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
             cursor: pointer;
         }
 
-        /* Kod Bloğu Stili */
-        pre {
+        .chart-card:hover {
+            transform: scale(1.02);
+            border-color: var(--accent);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        .chart-card img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            border-radius: 16px;
+            margin-bottom: 15px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--accent);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        /* Gelişmiş Lightbox */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(2, 6, 23, 0.95);
+            backdrop-filter: blur(15px);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+        }
+
+        .modal-container {
+            display: flex;
             background: #1e293b;
-            color: #e2e8f0;
-            padding: 1.5rem;
-            border-radius: 8px;
-            overflow-x: auto;
+            max-width: 1100px;
+            width: 100%;
+            border-radius: 30px;
+            overflow: hidden;
+            border: 1px solid var(--glass-border);
+            animation: slideUp 0.4s ease-out;
         }
 
-        footer {
+        .modal-img-side { flex: 1.5; background: #000; display: flex; align-items: center; }
+        .modal-img-side img { width: 100%; height: auto; }
+
+        .modal-info-side {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .btn-close {
+            position: absolute;
+            top: 20px; right: 20px;
+            background: none; border: none; color: #fff;
+            font-size: 2rem; cursor: pointer;
+        }
+
+        .download-btn {
+            margin-top: 20px;
+            padding: 12px 24px;
+            background: var(--accent);
+            color: var(--bg);
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
             text-align: center;
-            padding: 3rem;
-            background: var(--dark);
-            color: white;
-            margin-top: 4rem;
+            text-decoration: none;
         }
 
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @media (max-width: 900px) {
+            .modal-container { flex-direction: column; }
+        }
     </style>
 </head>
 <body>
 
 <header>
-    <h1>Türkiye Nüfus Verisi Analizi</h1>
-    <p>Cinsiyete göre demografik değişimlerin görsel yolculuğu</p>
+    <h1>Demografik Veri Analizi</h1>
+    <p style="color: var(--text-dim)">Türkiye Cinsiyet ve Nüfus Trendleri: 1965 - 2023</p>
 </header>
 
-<div class="container" id="grafikler">
-    <h2 class="section-title">Veri Analizi Grafikleri</h2>
-    
-    <div class="grid">
-        <div class="card" onclick="openModal('Grafik1.jpeg', 'Genel Nüfus Analizi')">
-            <img src="Grafik1.jpeg" alt="Grafik 1">
-            <div class="card-content">
-                <h3>📊 Genel Nüfus Analizi</h3>
-                <p>Türkiye'nin yıllara göre toplam nüfus artış trendini gösteren temel analiz.</p>
-            </div>
-        </div>
-
-        <div class="card" onclick="openModal('Grafik2.png', 'Kadın ve Erkek Nüfusu')">
-            <img src="Grafik2.png" alt="Grafik 2">
-            <div class="card-content">
-                <h3>👨‍👩‍👧 Kadın ve Erkek Nüfusu</h3>
-                <p>Cinsiyet dağılımının oransal karşılaştırması ve zaman içindeki dengesi.</p>
-            </div>
-        </div>
-
-        <div class="card" onclick="openModal('Grafik3.png', 'Yıllara Göre Değişim')">
-            <img src="Grafik3.png" alt="Grafik 3">
-            <div class="card-content">
-                <h3>📈 Yıllara Göre Değişim</h3>
-                <p>Belirli periyotlardaki büyüme hızlarının detaylı görselleştirmesi.</p>
-            </div>
-        </div>
-
-        <div class="card" onclick="openModal('Grafik4.png', 'Karşılaştırmalı Veri')">
-            <img src="Grafik4.png" alt="Grafik 4">
-            <div class="card-content">
-                <h3>📉 Karşılaştırmalı Veri</h3>
-                <p>Farklı yaş grupları ve dönemlerin çapraz analizi.</p>
-            </div>
-        </div>
+<div class="dashboard">
+    <!-- Kart 1 -->
+    <div class="chart-card" onclick="openPanel('Grafik1.jpeg', 'Nüfus Trendleri', '1965-2023 yılları arasındaki toplam nüfus artışı, sanayileşme ve kentleşme evreleriyle paralellik göstermektedir.')">
+        <span class="badge">ZAMAN SERİSİ</span>
+        <img src="Grafik1.jpeg" alt="Grafik 1">
+        <h3>Nüfus Trendleri</h3>
+        <p style="color: var(--text-dim); font-size: 0.9rem;">Yıllık büyüme hızının projeksiyonu.</p>
     </div>
 
-    <div style="margin-top: 5rem;">
-        <h2 class="section-title">Nasıl Hazırlandı?</h2>
-        <p>Bu proje Python'ın güçlü veri kütüphaneleri kullanılarak geliştirilmiştir:</p>
-        <pre><code>import pandas as pd
-import matplotlib.pyplot as plt
+    <!-- Kart 2 -->
+    <div class="chart-card" onclick="openPanel('Grafik2.png', 'Cinsiyet Oranı %', 'Erkek ve kadın nüfusu arasındaki denge, özellikle genç nüfusta korunurken, yaşlı nüfusta kadın lehine değişmektedir.')">
+        <span class="badge">ORANSAL ANALİZ</span>
+        <img src="Grafik2.png" alt="Grafik 2">
+        <h3>Cinsiyet Dağılımı</h3>
+        <p style="color: var(--text-dim); font-size: 0.9rem;">Kadın-Erkek nüfusunun 50 yıllık dengesi.</p>
+    </div>
 
-df = pd.read_excel("nufus.xlsx")
-plt.plot(df["Yıl"], df["Kadın"], label="Kadın")
-plt.plot(df["Yıl"], df["Erkek"], label="Erkek")
-plt.show()</code></pre>
+    <!-- Kart 3 -->
+    <div class="chart-card" onclick="openPanel('Grafik3.png', 'Doğurganlık Hızları', 'Son on yılda doğurganlık hızındaki düşüş, nüfus piramidinin tabanında daralmaya neden olmaktadır.')">
+        <span class="badge">DEMOGRAFİK DÖNÜŞÜM</span>
+        <img src="Grafik3.png" alt="Grafik 3">
+        <h3>Büyüme Hızı Analizi</h3>
+        <p style="color: var(--text-dim); font-size: 0.9rem;">Bölgelere göre artış katsayıları.</p>
     </div>
 </div>
 
-<div id="myModal" class="modal" onclick="closeModal()">
-    <span class="close">&times;</span>
-    <img class="modal-content" id="img01">
-    <div id="caption" style="color: white; text-align: center; margin-top: 15px; font-size: 1.2rem;"></div>
+<!-- Gelişmiş Modal Katmanı -->
+<div class="overlay" id="overlay">
+    <button class="btn-close" onclick="closePanel()">&times;</button>
+    <div class="modal-container">
+        <div class="modal-img-side">
+            <img id="modalImg" src="" alt="Büyük Görsel">
+        </div>
+        <div class="modal-info-side">
+            <span class="badge" style="width: fit-content">DETAYLI GÖRÜNÜM</span>
+            <h2 id="modalTitle" style="margin: 10px 0;">Başlık</h2>
+            <p id="modalDesc" style="color: var(--text-dim); font-size: 1.1rem; line-height: 1.8;">Açıklama metni buraya gelecek.</p>
+            <a href="#" id="downloadLink" download class="download-btn">Grafiği İndir (PNG)</a>
+        </div>
+    </div>
 </div>
-
-<footer>
-    <p>© 2026 Türkiye Nüfus Verisi Analizi • Halil Çelikkol</p>
-</footer>
 
 <script>
-    function openModal(imgSrc, captionText) {
-        document.getElementById("myModal").style.display = "flex";
-        document.getElementById("img01").src = imgSrc;
-        document.getElementById("caption").innerHTML = captionText;
+    const overlay = document.getElementById('overlay');
+    const modalImg = document.getElementById('modalImg');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalDesc = document.getElementById('modalDesc');
+    const downloadLink = document.getElementById('downloadLink');
+
+    function openPanel(img, title, desc) {
+        modalImg.src = img;
+        modalTitle.innerText = title;
+        modalDesc.innerText = desc;
+        downloadLink.href = img;
+        overlay.style.display = 'flex';
+        document.body.style.overflow = 'hidden'; // Kaydırmayı engelle
     }
 
-    function closeModal() {
-        document.getElementById("myModal").style.display = "none";
+    function closePanel() {
+        overlay.style.display = 'none';
+        document.body.style.overflow = 'auto';
     }
 
-    // Klavyeden ESC tuşu ile kapatma
-    document.addEventListener('keydown', function(event) {
-        if (event.key === "Escape") {
-            closeModal();
-        }
+    // Dışarı tıklayınca kapat
+    overlay.addEventListener('click', function(e) {
+        if (e.target === overlay) closePanel();
     });
 </script>
 
