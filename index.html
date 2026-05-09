@@ -1,937 +1,340 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Türkiye Nüfusunun Cinsiyete Göre Analizi | 1927-2025</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        :root {
-            --primary: #667eea;
-            --primary-dark: #764ba2;
-            --male-color: #3498db;
-            --female-color: #e74c3c;
-            --accent: #f39c12;
-            --text: #2c3e50;
-            --light-bg: #f8f9fa;
-            --border: #e9ecef;
-            --shadow: 0 10px 30px rgba(0,0,0,0.1);
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.8;
-            color: var(--text);
-            background: #f5f7fa;
-        }
-        
-        /* NAVBAR */
-        nav {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-            padding: 1rem 0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: var(--shadow);
-        }
-        
-        nav .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        nav h1 {
-            font-size: 1.5rem;
-            font-weight: 700;
-        }
-        
-        nav ul {
-            list-style: none;
-            display: flex;
-            gap: 30px;
-        }
-        
-        nav a {
-            color: white;
-            text-decoration: none;
-            transition: opacity 0.3s;
-        }
-        
-        nav a:hover {
-            opacity: 0.8;
-        }
-        
-        /* HEADER */
-        .header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-            padding: 80px 20px;
-            text-align: center;
-        }
-        
-        .header h1 {
-            font-size: 3em;
-            margin-bottom: 15px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-        }
-        
-        .header p {
-            font-size: 1.3em;
-            opacity: 0.95;
-            margin-bottom: 10px;
-        }
-        
-        .header .subtitle {
-            font-size: 1.1em;
-            opacity: 0.85;
-        }
-        
-        /* CONTAINER */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-        
-        /* SECTIONS */
-        section {
-            background: white;
-            margin: 40px auto;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: var(--shadow);
-            animation: fadeIn 0.6s ease-in;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        /* HEADINGS */
-        h2 {
-            color: var(--primary);
-            border-bottom: 3px solid var(--primary);
-            padding-bottom: 15px;
-            margin-bottom: 30px;
-            font-size: 2em;
-        }
-        
-        h3 {
-            color: var(--primary-dark);
-            margin-top: 25px;
-            margin-bottom: 15px;
-            font-size: 1.4em;
-        }
-        
-        /* STATS GRID */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin: 30px 0;
-        }
-        
-        .stat-card {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-            padding: 25px;
-            border-radius: 10px;
-            text-align: center;
-            box-shadow: var(--shadow);
-            transition: transform 0.3s;
-        }
-        
-        .stat-card:hover {
-            transform: translateY(-5px);
-        }
-        
-        .stat-card .number {
-            font-size: 2.5em;
-            font-weight: bold;
-            margin: 10px 0;
-        }
-        
-        .stat-card .label {
-            font-size: 0.95em;
-            opacity: 0.9;
-        }
-        
-        /* CHART CONTAINERS */
-        .chart-container {
-            position: relative;
-            height: 400px;
-            margin: 30px 0;
-            background: var(--light-bg);
-            padding: 20px;
-            border-radius: 8px;
-            border-left: 5px solid var(--primary);
-        }
-        
-        .chart-description {
-            background: #e8f4f8;
-            border-left: 4px solid var(--primary);
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 5px;
-        }
-        
-        .chart-description strong {
-            color: var(--primary-dark);
-        }
-        
-        /* INFO BOXES */
-        .info-box {
-            background: #f0f7ff;
-            border-left: 4px solid var(--primary);
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 5px;
-        }
-        
-        .info-box.highlight {
-            background: #fff3cd;
-            border-left-color: var(--accent);
-        }
-        
-        .info-box.success {
-            background: #d4edda;
-            border-left-color: #28a745;
-        }
-        
-        /* GRID LAYOUTS */
-        .grid-2 {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin: 30px 0;
-        }
-        
-        .grid-item {
-            background: var(--light-bg);
-            padding: 20px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-        }
-        
-        .grid-item h4 {
-            color: var(--primary);
-            margin-bottom: 15px;
-        }
-        
-        /* BUTTONS */
-        .btn {
-            display: inline-block;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-            padding: 12px 30px;
-            border-radius: 5px;
-            text-decoration: none;
-            transition: all 0.3s;
-            border: none;
-            cursor: pointer;
-            font-size: 1em;
-        }
-        
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
-        }
-        
-        /* TABLE */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-            font-size: 0.95em;
-        }
-        
-        table thead {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-        }
-        
-        table th {
-            padding: 15px;
-            text-align: left;
-            font-weight: 600;
-        }
-        
-        table td {
-            padding: 12px 15px;
-            border-bottom: 1px solid var(--border);
-        }
-        
-        table tbody tr:hover {
-            background: var(--light-bg);
-        }
-        
-        /* HIGHLIGHTS */
-        .highlight-text {
-            color: var(--primary);
-            font-weight: 600;
-        }
-        
-        .highlight-male {
-            color: var(--male-color);
-            font-weight: 600;
-        }
-        
-        .highlight-female {
-            color: var(--female-color);
-            font-weight: 600;
-        }
-        
-        /* CODE BLOCK */
-        .code-block {
-            background: #2c3e50;
-            color: #ecf0f1;
-            padding: 15px;
-            border-radius: 5px;
-            overflow-x: auto;
-            margin: 15px 0;
-            font-family: 'Courier New', monospace;
-            font-size: 0.9em;
-            line-height: 1.5;
-        }
-        
-        /* FOOTER */
-        footer {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-            text-align: center;
-            padding: 30px;
-            margin-top: 60px;
-        }
-        
-        footer p {
-            margin: 5px 0;
-        }
-        
-        /* RESPONSIVE */
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 2em;
-            }
-            
-            nav ul {
-                flex-direction: column;
-                gap: 15px;
-            }
-            
-            section {
-                padding: 20px;
-            }
-            
-            .chart-container {
-                height: 300px;
-            }
-        }
-        
-        /* LEGEND */
-        .legend {
-            display: flex;
-            gap: 30px;
-            flex-wrap: wrap;
-            margin: 20px 0;
-            padding: 15px;
-            background: var(--light-bg);
-            border-radius: 5px;
-        }
-        
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .legend-color {
-            width: 20px;
-            height: 20px;
-            border-radius: 3px;
-        }
-        
-        .color-male {
-            background-color: var(--male-color);
-        }
-        
-        .color-female {
-            background-color: var(--female-color);
-        }
-        
-        /* FEATURE CARDS */
-        .feature-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-            margin: 30px 0;
-        }
-        
-        .feature-card {
-            background: var(--light-bg);
-            padding: 25px;
-            border-radius: 8px;
-            border-left: 5px solid var(--primary);
-            transition: all 0.3s;
-        }
-        
-        .feature-card:hover {
-            box-shadow: var(--shadow);
-            transform: translateY(-5px);
-        }
-        
-        .feature-card h4 {
-            color: var(--primary);
-            margin-bottom: 10px;
-            font-size: 1.2em;
-        }
-    </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Türkiye Nüfus Analizi</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Inter',sans-serif;
+}
+
+body{
+    background:#0f172a;
+    color:#e2e8f0;
+}
+
+.container{
+    width:90%;
+    max-width:1200px;
+    margin:auto;
+}
+
+header{
+    min-height:90vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:40px 0;
+}
+
+.hero{
+    max-width:800px;
+}
+
+.badge{
+    display:inline-block;
+    padding:8px 18px;
+    background:rgba(59,130,246,.15);
+    border:1px solid rgba(59,130,246,.3);
+    border-radius:50px;
+    color:#60a5fa;
+    margin-bottom:20px;
+}
+
+.hero h1{
+    font-size:clamp(2.5rem,6vw,5rem);
+    margin-bottom:20px;
+    line-height:1.1;
+}
+
+.hero span{
+    color:#3b82f6;
+}
+
+.hero p{
+    color:#94a3b8;
+    font-size:1.1rem;
+    line-height:1.8;
+    margin-bottom:30px;
+}
+
+.btn{
+    display:inline-block;
+    padding:14px 28px;
+    background:#3b82f6;
+    color:white;
+    text-decoration:none;
+    border-radius:14px;
+    transition:.3s;
+}
+
+.btn:hover{
+    transform:translateY(-3px);
+    background:#2563eb;
+}
+
+section{
+    padding:90px 0;
+}
+
+.section-title{
+    font-size:2rem;
+    margin-bottom:15px;
+}
+
+.section-sub{
+    color:#94a3b8;
+    margin-bottom:40px;
+}
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:20px;
+}
+
+.card{
+    background:#111827;
+    border:1px solid rgba(255,255,255,.06);
+    border-radius:20px;
+    padding:25px;
+    transition:.3s;
+}
+
+.card:hover{
+    transform:translateY(-6px);
+}
+
+.card h3{
+    margin-bottom:10px;
+}
+
+.card p{
+    color:#94a3b8;
+    line-height:1.7;
+}
+
+.graph-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(350px,1fr));
+    gap:30px;
+}
+
+.graph-card{
+    background:#111827;
+    border-radius:22px;
+    overflow:hidden;
+    border:1px solid rgba(255,255,255,.05);
+}
+
+.graph-card img{
+    width:100%;
+    height:280px;
+    object-fit:cover;
+}
+
+.graph-content{
+    padding:20px;
+}
+
+.graph-content h3{
+    margin-bottom:10px;
+}
+
+.graph-content p{
+    color:#94a3b8;
+    line-height:1.6;
+}
+
+.code-box{
+    background:#020617;
+    border-radius:18px;
+    padding:20px;
+    overflow:auto;
+    border:1px solid rgba(255,255,255,.05);
+}
+
+pre{
+    color:#60a5fa;
+}
+
+footer{
+    text-align:center;
+    padding:40px;
+    color:#64748b;
+    border-top:1px solid rgba(255,255,255,.06);
+}
+
+@media(max-width:768px){
+    .graph-grid{
+        grid-template-columns:1fr;
+    }
+}
+</style>
 </head>
+
 <body>
-    <!-- NAVBAR -->
-    <nav>
-        <div class="container">
-            <h1>📊 Türkiye Nüfus Analizi</h1>
-            <ul>
-                <li><a href="#overview">Genel Bakış</a></li>
-                <li><a href="#charts">Grafikler</a></li>
-                <li><a href="#data">Veriler</a></li>
-                <li><a href="#methodology">Metodoloji</a></li>
-            </ul>
+
+<header>
+    <div class="container hero">
+        <div class="badge">
+            Türkiye Nüfus Verisi Analizi
         </div>
-    </nav>
-    
-    <!-- HEADER -->
-    <div class="header">
-        <div class="container">
-            <h1>🇹🇷 Türkiye Nüfusunun Cinsiyete Göre Analizi</h1>
-            <p>1927 - 2025 Yılları Arası Demografik Veri Analizi</p>
-            <p class="subtitle">98 Yıllık Tarihsel Nüfus Verisi | Erkek & Kadın Nüfusunun Evrimi</p>
+
+        <h1>
+            Türkiye <span>Nüfus Verisinin</span><br>
+            Cinsiyete Göre Analizi
+        </h1>
+
+        <p>
+            Bu projede Türkiye nüfus verileri yıllara göre incelenmiş,
+            kadın ve erkek nüfus dağılımları analiz edilerek grafiklerle
+            görselleştirilmiştir. Veri analizi Python, Pandas ve Matplotlib
+            kullanılarak hazırlanmıştır.
+        </p>
+
+        <a href="#grafikler" class="btn">
+            Grafikleri İncele
+        </a>
+    </div>
+</header>
+
+<section class="container">
+    <h2 class="section-title">Proje Hakkında</h2>
+    <p class="section-sub">
+        Türkiye nüfus yapısının yıllara göre değişimini inceleyen veri analizi projesi.
+    </p>
+
+    <div class="cards">
+        <div class="card">
+            <h3>📊 Veri Analizi</h3>
+            <p>
+                CSV verileri kullanılarak Türkiye nüfus yapısı
+                detaylı biçimde analiz edilmiştir.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>👨‍👩‍👧‍👦 Cinsiyet Dağılımı</h3>
+            <p>
+                Kadın ve erkek nüfus oranları karşılaştırılarak
+                değişimler gözlemlenmiştir.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>📈 Grafikler</h3>
+            <p>
+                Veriler grafiklerle desteklenmiş ve daha anlaşılır
+                hale getirilmiştir.
+            </p>
         </div>
     </div>
-    
-    <!-- GENEL BAKIŞ -->
-    <section class="container" id="overview">
-        <h2>📈 Genel Bakış</h2>
-        
-        <p>Bu kapsamlı analiz, Türkiye'nin 1927 yılından günümüze kadar gelen 98 yıllık nüfus verilerini cinsiyete göre incelemektedir. Proje, erkek ve kadın nüfusunun tarihsel değişimini, eğilimlerini ve demografik yapıyı anlamlandırmak amacıyla çeşitli istatistiksel ve görselleştirme yöntemlerini kullanır.</p>
-        
-        <div class="info-box highlight">
-            <strong>💡 Amaç:</strong> Türkiye'nin demografik yapısındaki uzun vadeli değişimleri analiz ederek, cinsiyet dağılımının nasıl evrimleştiğini göstermek.
-        </div>
-        
-        <!-- İSTATİSTİKLER -->
-        <h3>📊 Temel İstatistikler</h3>
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="label">Veri Kapsamı</div>
-                <div class="number">98</div>
-                <div class="label">Yıl (1927-2025)</div>
-            </div>
-            <div class="stat-card">
-                <div class="label">Toplam Veri Noktası</div>
-                <div class="number">33</div>
-                <div class="label">Temiz Veri Satırı</div>
-            </div>
-            <div class="stat-card">
-                <div class="label">Görselleştirme Türü</div>
-                <div class="number">5+</div>
-                <div class="label">Farklı Yöntem</div>
-            </div>
-            <div class="stat-card">
-                <div class="label">Cinsiyet Kategorileri</div>
-                <div class="number">2</div>
-                <div class="label">Erkek & Kadın</div>
+</section>
+
+<section class="container" id="grafikler">
+    <h2 class="section-title">Grafikler</h2>
+    <p class="section-sub">
+        Veri setinden oluşturulan görselleştirmeler.
+    </p>
+
+    <div class="graph-grid">
+
+        <div class="graph-card">
+            <img src="Grafik1.jpeg" alt="Grafik 1">
+            <div class="graph-content">
+                <h3>Grafik 1 - Genel Nüfus Dağılımı</h3>
+                <p>
+                    Türkiye genel nüfusunun yıllara göre değişimi.
+                </p>
             </div>
         </div>
-        
-        <!-- AÇIKLAMALAR -->
-        <h3>📝 Neden Bu Analiz?</h3>
-        <div class="grid-2">
-            <div class="grid-item">
-                <h4>🎯 Demografik Trendler</h4>
-                <p>Bir ülkenin nüfus yapısı, ekonomik, sosyal ve kültürel gelişiminin temelini oluşturur. Bu analiz, Türkiye'nin demografik dönüşümünü anlamak için çok önemlidir.</p>
-            </div>
-            <div class="grid-item">
-                <h4>📊 Veri Görselleştirmesi</h4>
-                <p>Karmaşık sayısal veriler, profesyonel görselleştirmeler aracılığıyla çok daha anlaşılır ve ilgi çekici hale getirilir.</p>
-            </div>
-            <div class="grid-item">
-                <h4>🔍 Eğilim Analizi</h4>
-                <p>Zaman serisi analizi sayesinde nüfus artışı, cinsiyet oranı değişimleri ve demografik belirtilerin eğilimleri açıkça görülebilir.</p>
-            </div>
-            <div class="grid-item">
-                <h4>💼 Bilimsel Yaklaşım</h4>
-                <p>Veriler temizlenir, standartlaştırılır ve birden fazla analitik perspektiften incelenir.</p>
+
+        <div class="graph-card">
+            <img src="Grafik2.png" alt="Grafik 2">
+            <div class="graph-content">
+                <h3>Grafik 2 - Kadın ve Erkek Nüfusu</h3>
+                <p>
+                    Cinsiyete göre nüfus oranlarının karşılaştırılması.
+                </p>
             </div>
         </div>
-    </section>
-    
-    <!-- GRAFİKLER BÖLÜMÜ -->
-    <section class="container" id="charts">
-        <h2>📊 Görselleştirmeler ve Analizler</h2>
-        
-        <!-- GRAFİK 1: ZAMAN SERİSİ -->
-        <div class="chart-description">
-            <strong>📉 GRAFİK 1: Zaman Serisi - Cinsiyete Göre Nüfus Değişimi</strong><br>
-            <p>Bu grafik, 1927'den 2025'e kadar erkek ve kadın nüfusunun yıllık değişimini gösterir. Mavi çizgi erkek nüfusunu, kırmızı çizgi kadın nüfusunu, kesikli gri çizgi ise toplam nüfusu temsil eder.</p>
-        </div>
-        
-        <div class="chart-container">
-            <canvas id="timeSeriesChart"></canvas>
-        </div>
-        
-        <div class="grid-2">
-            <div class="grid-item">
-                <h4>🔍 Grafik Analizi</h4>
-                <p><strong>Trend:</strong> Her iki cinsiyet de nüfusunda artış göstermektedir. Ancak, artış oranında bazı değişiklikler gözlemlenebilir.</p>
-                <p><strong>Erkek Nüfusu:</strong> <span class="highlight-male">Genel olarak kadın nüfusundan fazladır</span></p>
-                <p><strong>Kadın Nüfusu:</strong> <span class="highlight-female">Son yıllarda erkek nüfusuna yaklaşmaktadır</span></p>
-            </div>
-            <div class="grid-item">
-                <h4>💡 Bulunabilir İçgörüler</h4>
-                <p>✓ Nüfus artışı hızı zamanla değişmiştir<br>
-                ✓ İkinci Dünya Savaşı ve sonrasında etkilenebilir<br>
-                ✓ Yaşam beklentisindeki değişimler gözlemlenebilir<br>
-                ✓ Göçle ilgili etkenler var olabilir</p>
+
+        <div class="graph-card">
+            <img src="Grafik3.png" alt="Grafik 3">
+            <div class="graph-content">
+                <h3>Grafik 3 - Yıllara Göre Analiz</h3>
+                <p>
+                    Seçilen yıllarda nüfus değişim trendleri.
+                </p>
             </div>
         </div>
-        
-        <hr style="margin: 40px 0; border: 1px solid var(--border);">
-        
-        <!-- GRAFİK 2: MODERN LOLLIPOP CHART -->
-        <div class="chart-description">
-            <strong>🍭 GRAFİK 2: Modern Lollipop Chart - Erkek ve Kadın Nüfusunun Karşılaştırması</strong><br>
-            <p>Bu modern görselleştirme, dikey çizgiler (stemler) ve noktalar (lollipops) kullanarak her yıl için erkek ve kadın nüfusunu ayrı ayrı gösterir. Siyah arka plan, verilerin daha belirgin görünmesini sağlar.</p>
-        </div>
-        
-        <div class="info-box">
-            <strong>🎨 Tasarım Özellikleri:</strong>
-            <ul>
-                <li>Açık mavi çizgiler ve noktalar: <span class="highlight-male">Erkek nüfusu</span></li>
-                <li>Pembe çizgiler ve noktalar: <span class="highlight-female">Kadın nüfusu</span></li>
-                <li>Semi-transparent dolgular: Görsel denge</li>
-                <li>Dark background: Veri odaklı tasarım</li>
-            </ul>
-        </div>
-        
-        <div class="grid-2">
-            <div class="grid-item">
-                <h4>📊 Neler Görüyoruz?</h4>
-                <p><strong>Yükselen Trendler:</strong> Her iki cinsiyet de nüfusunda istikrarlı bir artış gösterir.</p>
-                <p><strong>Dalgalanmalar:</strong> Bazı yıllarda hafif dalgalanmalar görülmektedir (savaş, göç vb.)</p>
-            </div>
-            <div class="grid-item">
-                <h4>🔢 Sayısal Veriler</h4>
-                <p><strong>1927 Erkek:</strong> ~13 Milyon<br>
-                <strong>1927 Kadın:</strong> ~12 Milyon<br>
-                <strong>2025 Erkek:</strong> ~44 Milyon<br>
-                <strong>2025 Kadın:</strong> ~43 Milyon</p>
+
+        <div class="graph-card">
+            <img src="Grafik4.png" alt="Grafik 4">
+            <div class="graph-content">
+                <h3>Grafik 4 - Karşılaştırmalı Grafik</h3>
+                <p>
+                    Farklı yıllardaki nüfus karşılaştırmaları.
+                </p>
             </div>
         </div>
-        
-        <hr style="margin: 40px 0; border: 1px solid var(--border);">
-        
-        <!-- GRAFİK 3: HEATMAP + TREND -->
-        <div class="chart-description">
-            <strong>🔥 GRAFİK 3: Cinsiyet Oranı Heatmap + Trend Analizi</strong><br>
-            <p>Bu grafik, cinsiyet oranının (Erkek/Kadın) zaman içindeki değişimini ısı haritası (heatmap) olarak gösterir. Sıcak renkler yüksek oranları, soğuk renkler düşük oranları temsil eder.</p>
-        </div>
-        
-        <div class="info-box success">
-            <strong>📐 Cinsiyet Oranı Nedir?</strong>
-            <p>Cinsiyet Oranı = (Erkek Nüfusu / Kadın Nüfusu) × 100</p>
-            <p>• Oran 100'den fazla = Erkek nüfusu daha fazla<br>
-            • Oran 100'e eşit = Tamamen dengeli<br>
-            • Oran 100'den az = Kadın nüfusu daha fazla</p>
-        </div>
-        
-        <div class="grid-2">
-            <div class="grid-item">
-                <h4>📈 Trend Analizi</h4>
-                <p><strong>Genel Eğilim:</strong> Cinsiyet oranı 100'den başlayarak artmış, sonra yavaş yavaş düşmüştür.</p>
-                <p><strong>Pik Noktası:</strong> 1980'ler civarında en yüksek erkek oranına ulaşılmıştır.</p>
-            </div>
-            <div class="grid-item">
-                <h4>🌡️ Renk Yorumu</h4>
-                <p><strong>Kırmızı Alanlar:</strong> Yüksek erkek oranı<br>
-                <strong>Mavi Alanlar:</strong> Düşük erkek oranı (daha dengeli)<br>
-                <strong>Sarı Çizgi:</strong> 100 eşitlik referans çizgisi</p>
+
+        <div class="graph-card">
+            <img src="Grafik5.png" alt="Grafik 5">
+            <div class="graph-content">
+                <h3>Grafik 5 - Sonuç Analizi</h3>
+                <p>
+                    Genel sonuçların görsel özeti.
+                </p>
             </div>
         </div>
-        
-        <hr style="margin: 40px 0; border: 1px solid var(--border);">
-        
-        <!-- GRAFİK 4: DAIRESEL GRAFIK -->
-        <div class="chart-description">
-            <strong>🎡 GRAFİK 4: Kutupsal (Polar) Grafik - Son 10 Yılın Verisi</strong><br>
-            <p>Bu daire şeklindeki grafik, son 10 yılın (2016-2025) erkek ve kadın nüfusunu kutupsal koordinat sistemiyle gösterir. Her yıl bir eksen, nüfus değeri ise radyal uzaklıktır.</p>
-        </div>
-        
-        <div class="info-box">
-            <strong>🎨 Grafik Özellikleri:</strong>
-            <p>Bu grafik, verinin döngüsel doğasını vurgulamak ve karşılaştırmasını kolaylaştırmak için kullanılır.</p>
-            <ul>
-                <li>İç alan: Erkek nüfusu</li>
-                <li>Dış alan: Kadın nüfusu</li>
-                <li>Saydamlık: Verilerin üst üste görülmesini sağlar</li>
-            </ul>
-        </div>
-        
-        <div class="grid-2">
-            <div class="grid-item">
-                <h4>📍 Yıllara Göre Dağılım</h4>
-                <p>Son 10 yıl içinde nüfus artışı devam etmekle birlikte, artış hızında bir yavaşlama görülmektedir.</p>
-                <p><strong>2016:</strong> 79M (Toplam)<br>
-                <strong>2025:</strong> 87M (Toplam)</p>
-            </div>
-            <div class="grid-item">
-                <h4>🔄 Döngüsel Yapı</h4>
-                <p>Kutupsal grafik, verinin mevsimsel veya döngüsel eğilimlerini göstermek için ideal olsa da, burada yıllık karşılaştırma için kullanılmıştır.</p>
-            </div>
-        </div>
-        
-        <hr style="margin: 40px 0; border: 1px solid var(--border);">
-        
-        <!-- GRAFİK 5: 3D VİZYUALİZASYON -->
-        <div class="chart-description">
-            <strong>🎯 GRAFİK 5: Üç Boyutlu Cinsiyet Kompozisyonu</strong><br>
-            <p>Bu 3D grafik, erkek ve kadın nüfusunun üç boyutlu uzayda temsil edildiği, hem çizgi hem de bar grafiği kombinasyonudur. Zaman (1927-2025) yatay eksen, cinsiyet kategorisi iki eksen, nüfus değeri ise dikey eksendir.</p>
-        </div>
-        
-        <div class="info-box">
-            <strong>📐 3D Grafik Yapısı:</strong>
-            <p>• X Ekseni: Yıllar (1927-2025)<br>
-            • Y Ekseni: Cinsiyet (Erkek/Kadın)<br>
-            • Z Ekseni: Nüfus (Sayı)</p>
-        </div>
-        
-        <div class="grid-2">
-            <div class="grid-item">
-                <h4>🎬 Perspektif Açısı</h4>
-                <p>3D görüş açısı, verilerin detaylı olarak görülmesini sağlamak üzere optimize edilmiştir.</p>
-                <p><strong>Elevation:</strong> 25°<br>
-                <strong>Azimuth:</strong> -60°</p>
-            </div>
-            <div class="grid-item">
-                <h4>🎨 Renk Kodlaması</h4>
-                <p><strong>Mavi Tonları:</strong> <span class="highlight-male">Erkek nüfusu</span><br>
-                <strong>Kırmızı Tonları:</strong> <span class="highlight-female">Kadın nüfusu</span></p>
-            </div>
-        </div>
-    </section>
-    
-    <!-- VERİ BÖLÜMÜ -->
-    <section class="container" id="data">
-        <h2>📋 Veri Bilgileri</h2>
-        
-        <h3>📁 Veri Kaynağı</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Başlık</th>
-                    <th>Değer</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td><strong>Dosya Adı</strong></td>
-                    <td>Cinsiyete Göre Nüfus.csv</td>
-                </tr>
-                <tr>
-                    <td><strong>Zaman Aralığı</strong></td>
-                    <td>1927 - 2025 (98 yıl)</td>
-                </tr>
-                <tr>
-                    <td><strong>Satır Sayısı</strong></td>
-                    <td>33 (temiz veri)</td>
-                </tr>
-                <tr>
-                    <td><strong>Sütun Sayısı</strong></td>
-                    <td>6 (Yıl, Düzey, Toplam, Erkek, Kadın, Not)</td>
-                </tr>
-                <tr>
-                    <td><strong>Veri Türü</strong></td>
-                    <td>Nümerik (Tamsayı)</td>
-                </tr>
-                <tr>
-                    <td><strong>Kodlama</strong></td>
-                    <td>ISO-8859-9 (Türkçe)</td>
-                </tr>
-                <tr>
-                    <td><strong>Ayırıcı</strong></td>
-                    <td>Otomatik algılama</td>
-                </tr>
-            </tbody>
-        </table>
-        
-        <h3>🔄 Veri İşleme Adımları</h3>
-        
-        <div class="feature-grid">
-            <div class="feature-card">
-                <h4>1️⃣ Okuma</h4>
-                <p>CSV dosyası ISO-8859-9 kodlaması ile okunur</p>
-            </div>
-            <div class="feature-card">
-                <h4>2️⃣ Temizleme</h4>
-                <p>Sütun isimleri düzeltilir ve gereksiz satırlar kaldırılır</p>
-            </div>
-            <div class="feature-card">
-                <h4>3️⃣ Dönüştürme</h4>
-                <p>Metin formatı sayısal değerlere dönüştürülür (binlik ayraçlar kaldırılır)</p>
-            </div>
-            <div class="feature-card">
-                <h4>4️⃣ Düzenleme</h4>
-                <p>Veriler yıla göre sıralanır ve standardize edilir</p>
-            </div>
-            <div class="feature-card">
-                <h4>5️⃣ Analiz</h4>
-                <p>Çeşitli istatistiksel metriklerin hesaplanır</p>
-            </div>
-            <div class="feature-card">
-                <h4>6️⃣ Görselleştirme</h4>
-                <p>Veriler çeşitli grafik türleriyle görselleştirilir</p>
-            </div>
-        </div>
-        
-        <h3>📊 Veri Örneği</h3>
-        <div class="code-block">
+
+    </div>
+</section>
+
+<section class="container">
+    <h2 class="section-title">Örnek Kodlar</h2>
+    <p class="section-sub">
+        Veri analizi sırasında kullanılan temel Python kodları.
+    </p>
+
+    <div class="code-box">
+<pre>
 import pandas as pd
 
-# Veri Okuma
-df = pd.read_csv('Cinsiyete Göre Nüfus.csv', encoding='iso-8859-9')
-
-# Temizleme
-df.columns = ['Yıl', 'Düzey', 'Toplam', 'Erkek', 'Kadın', 'Not']
-df = df.iloc[1:34].copy()
-
-# Sayısal Dönüştürme
-for col in ['Toplam', 'Erkek', 'Kadın']:
-    df[col] = df[col].str.replace('.', '', regex=False).astype(int)
+df = pd.read_csv("Cinsiyete Göre Nüfus.csv")
 
 print(df.head())
-        </div>
-        
-        <div class="legend">
-            <div class="legend-item">
-                <div class="legend-color color-male"></div>
-                <span><strong>Erkek Nüfusu:</strong> Mavi renk ile gösterilir</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-color color-female"></div>
-                <span><strong>Kadın Nüfusu:</strong> Kırmızı renk ile gösterilir</span>
-            </div>
-        </div>
-    </section>
-    
-    <!-- METODOLOJİ -->
-    <section class="container" id="methodology">
-        <h2>🔬 Metodoloji ve Teknoloji</h2>
-        
-        <h3>🛠️ Kullanılan Kütüphaneler</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Kütüphane</th>
-                    <th>Versiyon</th>
-                    <th>Kullanım Amacı</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td><strong>Python</strong></td>
-                    <td>3.8+</td>
-                    <td>Ana programlama dili</td>
-                </tr>
-                <tr>
-                    <td><strong>Pandas</strong></td>
-                    <td>1.3+</td>
-                    <td>Veri işleme, temizleme, analiz</td>
-                </tr>
-                <tr>
-                    <td><strong>Matplotlib</strong></td>
-                    <td>3.4+</td>
-                    <td>Statik grafik ve görselleştirme</td>
-                </tr>
-                <tr>
-                    <td><strong>Seaborn</strong></td>
-                    <td>0.11+</td>
-                    <td>İstatistiksel görselleştirme (Heatmap vb.)</td>
-                </tr>
-                <tr>
-                    <td><strong>NumPy</strong></td>
-                    <td>1.20+</td>
-                    <td>Sayısal hesaplamalar ve diziler</td>
-                </tr>
-                <tr>
-                    <td><strong>Jupyter</strong></td>
-                    <td>1.0+</td>
-                    <td>İnteraktif notebook ortamı</td>
-                </tr>
-            </tbody>
-        </table>
-        
-        <h3>📈 Analitik Teknikler</h3>
-        <div class="grid-2">
-            <div class="grid-item">
-                <h4>Zaman Serisi Analizi</h4>
-                <p>Uzun dönemli trendleri ve eğilimleri tanımlamak için zaman serisi grafikleri kullanılır. Veriler kronolojik sırada sunulur ve değişim desenleri gözlemlenebilir.</p>
-            </div>
-            <div class="grid-item">
-                <h4>Rasyosal Karşılaştırma</h4>
-                <p>Cinsiyet oranı (Erkek/Kadın) hesaplanarak, iki grup arasındaki dengenin zaman içindeki değişimi analiz edilir.</p>
-            </div>
-            <div class="grid-item">
-                <h4>Görsel Teknik</h4>
-                <p>5 farklı görselleştirme tekniği kullanılarak aynı veri farklı perspektiflerden sunulur. Her grafik farklı bir içgörü sağlar.</p>
-            </div>
-            <div class="grid-item">
-                <h4>Veri Normalizasyonu</h4>
-                <p>Veri temizleme, standardizasyon ve birimlerin tutarlılığının sağlanması, analiz kalitesini artırır.</p>
-            </div>
-        </div>
-        
-        <h3>🎯 Ayrıntılı Python Kod Örneği</h3>
-        <div class="code-block">
-import pandas as pd
+</pre>
+    </div>
+
+    <br>
+
+    <div class="code-box">
+<pre>
 import matplotlib.pyplot as plt
-import seaborn as sns
-from matplotlib.ticker import MaxNLocator
 
-# Veri Okuma
-df = pd.read_csv('Cinsiyete Göre Nüfus.csv', 
-                   encoding='iso-8859-9', 
-                   sep=None, 
-                   engine='python')
-
-# Temizleme
-df.columns = ['Yıl', 'Düzey', 'Toplam', 'Erkek', 'Kadın', 'Not']
-df = df.iloc[1:34].copy()
-
-# Dönüştürme
-for col in ['Toplam', 'Erkek', 'Kadın']:
-    df[col] = df[col].str.replace('.', '', regex=False).astype(int)
-
-df['Yıl'] = df['Yıl'].astype(int)
-
-# Grafik Oluşturma
-plt.figure(figsize=(12, 7))
-sns.set_style("whitegrid")
-
-plt.plot(df['Yıl'], df['Erkek'], label='Erkek', marker='o', color='#3498db', linewidth=2)
-plt.plot(df['Yıl'], df['Kadın'], label='Kadın', marker='o', color='#e74c3c', linewidth=2)
-plt.plot(df['Yıl'], df['Toplam'], label='Toplam', linestyle='--', color='#2c3e50', alpha=0.5)
-
-plt.title('Türkiye Nüfusunun Cinsiyete Göre Değişimi (1927 - 2025)', fontsize=15, pad=20)
-plt.xlabel('Yıl')
-plt.ylabel('Nüfus')
-plt.legend()
-plt.tight_layout()
+plt.plot(df["Yıl"], df["Erkek"])
+plt.plot(df["Yıl"], df["Kadın"])
+plt.title("Türkiye Nüfus Analizi")
 plt.show()
-        </div>
-        
-        <h3>💡 Temel Bulgular</h3>
-        <div class="info-box highlight">
-            <strong>✅ Ana Sonuçlar:</strong>
-            <ul>
-                <li><strong>Nüfus Artışı:</strong> 1927'de ~25 milyon olan nüfus, 2025'te ~87 milyona ulaşmıştır.</li>
-                <li><strong>Erkek Baskınlığı:</strong> İlk yıllarda erkek nüfusu daha fazla olmakla birlikte, son yıllarda fark azalmaktadır.</li>
-                <li><strong>Artış Hızında Yavaşlama:</strong> 20. yüzyılın ikinci yarısında hızlı artış, 21. yüzyılda yavaşlamıştır.</li>
-                <li><strong>Cinsiyet Dengesi:</strong> Modern dönemde cinsiyet oranı 100'e daha yakın hale gelmiştir.</li>
-            </ul>
-        </div>
-    </section>
-    
-    <!-- CALL TO ACTION -->
-    <section class="container">
-        <div style="text-align: center; padding: 40px; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); border-radius: 10px; color: white;">
-            <h2 style="color: white; border: none; padding-bottom: 0;">🚀 Daha Fazla Bilgi</h2>
-            <p style="font-size: 1.1em; margin: 20px 0;">Bu proje GitHub'da açık kaynak olarak mevcuttur. İncelemek, indirmek veya katkıda bulunmak için ziyaret edin.</p>
-            <a href="https://github.com/Halil-Celikkol/Cinsiyete_Gore_Nufus" target="_blank" class="btn" style="background: white; color: var(--primary);">
-                🔗 GitHub Repository'yi Ziyaret Et
-            </a>
-        </div>
-    </section>
-    
-    <!-- FOOTER -->
-    <footer>
-        <p><strong>📊 Türkiye Nüfusunun Cinsiyete Göre Analizi</strong></p>
-        <p>Veri Analizi & Görselleştirme Projesi | Python | Jupyter Notebook | GitHub Pages</p>
-        <p>© 2026 Halil Çelikkol | <a href="https://github.com/Halil-Celikkol" target="_blank" style="color: white; text-decoration: none;">@Halil-Celikkol</a></p>
-        <p>Son Güncelleme: Mayıs 2026</p>
-    </footer>
-    
-    <!-- CHART.JS GRAFIKLER -->
-    <script>
-        // Örnek veriler (gerçek verilerle değiştirilecek)
-        const yearsData = [1927, 1940, 1950, 1960, 1970, 1980, 1990, 2000, 2010, 2020, 2025];
-        const maleData = [13.648, 17.345, 20.948, 27.755, 35.345, 40.348, 43.554, 44.737, 37.877, 42.158, 44.235];
-        const femaleData = [12.543, 16.432, 19.854, 26.234, 33.845, 39.145, 41.234, 42.854, 36.543, 41.235, 43.123];
-        
-        // Zaman Serisi Grafiği
-        const timeSeriesCtx = document.getElementById('timeSeriesChart').getContext('2d');
-        new Chart(timeSeriesCtx, {
-            type: 'line',
-            data: {
-                labels: yearsData,
-                datasets: [
-                    {
-                        label: 'Erkek Nüfusu',
-                        data: maleData,
-                        borderColor: '#3498db',
-                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
-                        tension: 0.3,
-                        pointRadius: 5,
-                        pointBackgroundColor: '#3498db',
-                        borderWidth: 3
-                    },
-                    {
-                        label: 'Kadın Nüfusu',
-                        data: femaleData,
-                        borderColor: '#e74c3c',
-                        backgroundColor: 'rgba(231, 76, 60, 0.1)',
-                        tension: 0.3,
-                        pointRadius: 5,
-                        pointBackgroundColor: '#e74c3c',
-                        borderWidth: 3
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: true,
-                        labels: {
-                            font: { size: 12, weight: 'bold' },
-                            padding: 15
-                        }
-                    }
-                },
-                scales: {
-                    y: {
-                        title: { display: true, text: 'Nüfus (Milyon)' },
-                        ticks: { font: { size: 11 } }
-                    },
-                    x: {
-                        title: { display: true, text: 'Yıl' },
-                        ticks: { font: { size: 11 } }
-                    }
-                }
-            }
-        });
-    </script>
+</pre>
+    </div>
+</section>
+
+<footer>
+    © 2026 Türkiye Nüfus Verisi Analizi | GitHub Pages Projesi
+</footer>
+
 </body>
 </html>
